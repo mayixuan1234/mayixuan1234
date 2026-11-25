@@ -1,0 +1,836 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>马怡煖 · 全栈工程师 · 作品集</title>
+<meta name="description" content="2026 届软件工程应届生，全栈开发，独立完成医疗问答系统并上线 4 个真实项目。">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  :root{
+    --blue:#1F5CAC;--blue-deep:#0F3A5E;
+    --lt:#d6e8f8;--lt-bg:#eaf2fb;--lt-bd:#c9ddf0;--lt-ink:#1f4e79;
+    --ink:#16324F;--ink2:#44617e;
+  }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;
+    background:url("images/hero-bg.png") center/cover no-repeat fixed,#eaf2fb;
+  }
+  a{color:inherit;text-decoration:none}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .wrap{max-width:1180px;margin:0 auto;width:100%}
+
+  /* ===== 左侧边栏 ===== */
+  .side{
+    position:fixed;top:0;left:0;bottom:0;width:290px;z-index:100;
+    background:#fff;border-right:1px solid #E6EDF3;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:36px 0;transition:width .3s ease,transform .3s ease;overflow:hidden;
+  }
+  .side .brand{padding:0 32px;margin-bottom:36px;white-space:nowrap}
+  .side .brand .name{font-size:20px;font-weight:800;color:var(--blue-deep)}
+  .side .brand .sub{font-size:12px;color:var(--ink2);margin-top:4px}
+  .nav{flex:1}
+  .nav a{display:block;padding:13px 32px;font-size:21px;font-weight:700;color:#9fb2c4;transition:.3s;position:relative;white-space:nowrap}
+  .nav a .no{font-size:11px;font-weight:400;opacity:.7;margin-right:10px;letter-spacing:.1em}
+  .nav a:hover{color:var(--blue)}
+  .nav a.active{color:var(--blue-deep);font-size:24px}
+  .nav a.active::before{content:"";position:absolute;left:14px;top:50%;transform:translateY(-50%);width:4px;height:24px;background:var(--blue);border-radius:2px}
+  .side .foot{padding:0 32px;font-size:12px;color:var(--ink2);line-height:1.9;white-space:nowrap}
+
+  /* 折叠按钮（边栏右边缘） */
+  .collapse-btn{
+    position:fixed;left:290px;top:50%;transform:translateY(-50%);z-index:110;
+    width:22px;height:64px;background:#fff;border:1px solid #E6EDF3;border-left:none;
+    border-radius:0 10px 10px 0;cursor:pointer;color:var(--blue);font-size:14px;
+    transition:left .3s ease;display:flex;align-items:center;justify-content:center;
+  }
+  body.collapsed .side{width:0;border-right:none}
+  body.collapsed main{margin-left:0}
+  body.collapsed .collapse-btn{left:0}
+  body.collapsed .collapse-btn .arrow{transform:rotate(180deg)}
+  .collapse-btn .arrow{transition:transform .3s;display:inline-block}
+
+  /* 移动端顶栏 */
+  .topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:100;background:#fff;
+    padding:13px 18px;border-bottom:1px solid #E6EDF3;
+    justify-content:space-between;align-items:center;font-weight:800;color:var(--blue-deep)}
+  .topbar .menu-btn{font-size:13px;font-weight:600;color:var(--blue);border:1px solid #bcd0e0;border-radius:8px;padding:5px 12px;cursor:pointer}
+  .mnav{display:none;position:fixed;top:54px;left:0;right:0;z-index:99;background:#fff;border-bottom:1px solid #E6EDF3;box-shadow:0 10px 24px rgba(0,20,60,.08)}
+  .mnav.open{display:block}
+  .mnav a{display:block;padding:13px 20px;font-size:17px;font-weight:600;color:var(--blue-deep);border-bottom:1px solid #f0f4f8}
+  .mnav a:last-child{border-bottom:none}
+
+  /* ===== 右侧内容 ===== */
+  main{margin-left:290px;transition:margin .3s ease}
+  .panel{min-height:100vh;display:flex;align-items:center;padding:80px 48px;background:rgba(255,255,255,.8)}
+  .panel .kicker{font-size:12px;letter-spacing:.22em;color:var(--blue);margin-bottom:10px;font-weight:700}
+
+  /* 封面：左右两栏 */
+  .cover-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:center;width:100%}
+  @media(max-width:980px){.cover-grid{grid-template-columns:1fr;gap:28px}}
+  .cover h1{font-size:clamp(28px,3.6vw,44px);font-weight:800;line-height:1.18;color:var(--blue-deep);letter-spacing:-.01em}
+  .cover .role{margin-top:16px;font-size:clamp(16px,1.9vw,20px);font-weight:600;color:var(--blue)}
+  .cover .lede{margin-top:20px;font-size:17px;color:var(--ink2);max-width:580px;line-height:1.75}
+  .cover .tags{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px}
+  .cover .tags span{font-size:14px;border:1px solid var(--lt-bd);padding:6px 15px;border-radius:999px;background:var(--lt-bg);color:var(--lt-ink)}
+  .cover .cta{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap}
+
+  /* 首页：统一透出 body 固定背景，无接缝 */
+  .cover{
+    position:relative;isolation:isolate;
+  }
+  .cover .quick{background:rgba(255,255,255,.92);backdrop-filter:blur(6px)}
+
+  /* 按钮动效：上浮 + 阴影 */
+  .btn{transition:transform .18s ease, box-shadow .18s ease, background .18s ease}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(15,58,94,.16)}
+  .btn:active{transform:translateY(0) scale(.98)}
+  .btn{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;padding:11px 22px;border-radius:999px;transition:.2s;cursor:pointer;border:1px solid transparent;background:none;font-family:inherit}
+  .btn-solid{background:var(--blue);color:#fff}.btn-solid:hover{background:var(--blue-deep)}
+  .btn-line{border-color:#cdddee;color:var(--blue-deep)}.btn-line:hover{background:#eef4fa}
+  .btn-yellow{background:var(--lt);color:#143E6E;border-color:var(--lt-bd)}.btn-yellow:hover{background:#c8e0f5}
+
+  /* 右侧速览卡 */
+  .quick{background:#fff;border:1px solid #e6edf3;border-radius:18px;padding:26px;box-shadow:0 10px 30px rgba(15,58,94,.07)}
+  .quick h4{font-size:13px;letter-spacing:.18em;color:var(--blue);margin-bottom:14px}
+  .quick .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #e8eef4;font-size:14px}
+  .quick .row:last-child{border-bottom:none}
+  .quick .row b{color:var(--blue-deep)}
+  .quick .row span{color:var(--ink2)}
+
+  /* 项目 */
+  .ptitle{font-size:clamp(23px,3vw,32px);font-weight:800;margin-bottom:8px;color:var(--blue-deep);line-height:1.25}
+  .pmeta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center}
+  .badge{font-size:12px;font-weight:600;background:var(--lt-bg);border:1px solid var(--lt-bd);padding:4px 12px;border-radius:999px;color:var(--lt-ink);cursor:pointer}
+  .badge:hover{background:#dbeafb}
+  .time{font-size:12px;color:var(--ink2)}
+  .cols{display:grid;grid-template-columns:5fr 7fr;gap:40px;align-items:start}
+  .shot-col{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+  @media(max-width:980px){.cols{grid-template-columns:1fr}}
+
+  .ph{aspect-ratio:16/9;border:2px dashed #c9d9e8;border-radius:16px;background:#f4f8fb;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:18px}
+  .ph .ico{font-size:32px}.ph .t{font-size:15px;font-weight:600;color:var(--blue-deep)}.ph .s{font-size:12px;color:var(--ink2)}
+  .shot-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;border:1px solid var(--lt-bd);background:#fff;display:block}
+  .shot-row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+  .shot-img-v{width:100%;aspect-ratio:9/19.5;object-fit:cover;border-radius:12px;border:1px solid var(--lt-bd);background:#fff;display:block}
+
+  .body p{font-size:16.5px;color:var(--ink)}
+  .note{font-size:13px;color:var(--ink2);background:#f4f9ff;border-left:3px solid #7fb2e0;padding:9px 13px;border-radius:0 8px 8px 0;margin-top:12px}
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+  @media(max-width:640px){.nums{grid-template-columns:repeat(2,1fr)}}
+  .nums .n{background:var(--lt-bg);border:1px solid var(--lt-bd);border-radius:12px;padding:11px 13px;color:var(--lt-ink)}
+  .nums .n .v{font-size:19px;font-weight:800;color:var(--blue-deep)}
+  .nums .n .l{font-size:12px;color:#5a7fa6}
+  .stack{margin-top:6px}
+  .stack span{display:inline-block;font-size:12px;background:#eaf1f9;color:var(--blue-deep);padding:3px 10px;border-radius:6px;margin:3px 4px 0 0}
+  .link{display:inline-block;margin-top:13px;font-size:14px;font-weight:600;color:var(--blue);border-bottom:1px solid #bcd0e0;padding-bottom:2px}
+
+  /* 折叠详情（简历式） */
+  details{margin-top:16px;border:1px solid #e2ebf3;border-radius:12px;background:#fafcfe;overflow:hidden}
+  details summary{cursor:pointer;list-style:none;padding:12px 16px;font-size:14px;font-weight:700;color:var(--blue-deep);display:flex;justify-content:space-between;align-items:center}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"▾";color:var(--blue);transition:.2s}
+  details[open] summary::after{transform:rotate(180deg)}
+  details .body-in{padding:4px 16px 14px;font-size:14px;color:var(--ink)}
+  details .body-in ul{padding-left:18px;margin:6px 0}
+  details .body-in li{margin:5px 0}
+  details .body-in b{color:var(--blue-deep)}
+
+  /* 联系项：值 + 点击复制 */
+  .crow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .crow .val{font-size:14px;color:var(--blue-deep);font-weight:600}
+  .copybtn{font-size:12px;border:1px solid #cdddee;border-radius:6px;padding:3px 10px;cursor:pointer;color:var(--blue);background:#fff}
+  .copybtn:hover{background:#eef4fa}
+
+  .end{align-items:center;text-align:center}
+  .end h2{font-size:clamp(28px,4.5vw,46px);font-weight:900;color:var(--blue-deep)}
+  .end p{margin-top:16px;color:var(--ink2)}
+  .end .contacts{margin-top:30px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+  footer{padding:26px 48px;font-size:12px;color:#5a7fa6;text-align:center;background:#ffffff}
+
+  /* Toast */
+  #toast{position:fixed;left:50%;bottom:46px;transform:translateX(-50%) translateY(20px);
+    background:var(--blue-deep);color:#fff;padding:11px 22px;border-radius:999px;font-size:14px;
+    opacity:0;pointer-events:none;transition:.3s;z-index:999;box-shadow:0 8px 24px rgba(0,20,60,.25)}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* 底部阅读进度条 */
+  #progress{position:fixed;left:0;bottom:0;height:4px;width:0;z-index:300;
+    background:linear-gradient(90deg,var(--blue),#7fb2e0);transition:width .1s linear}
+
+  /* 弹窗 lightbox */
+  .modal{position:fixed;inset:0;background:rgba(10,25,50,.6);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+  .modal.open{display:flex}
+  .modal .box{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:26px;text-align:center}
+  .modal .box h4{color:var(--blue-deep);margin-bottom:14px}
+  .modal .imgph{aspect-ratio:auto;max-height:60vh;border-radius:12px;object-fit:contain;background:#fff}
+  .modal .box img{max-width:100%;max-height:58vh;border-radius:10px;display:block;margin:0 auto}
+  .modal .close{margin-top:16px}
+
+  @media(max-width:860px){
+    .side,.collapse-btn{display:none}
+    .topbar{display:flex}
+    main{margin-left:0}
+    .panel{padding:64px 22px}
+    footer{padding:24px}
+  }
+</style>
+</head>
+<body>
+
+<aside class="side">
+  <div>
+    <div class="brand">
+      <div class="name">马怡煖</div>
+      <div class="sub">全栈工程师 · 2026 届</div>
+    </div>
+    <nav class="nav">
+      <a href="#cover" data-sec="cover"><span class="no">00</span>首页</a>
+      <a href="#p1" data-sec="p1"><span class="no">01</span>医疗问答系统</a>
+      <a href="#p2" data-sec="p2"><span class="no">02</span>Vector RAG</a>
+      <a href="#p3" data-sec="p3"><span class="no">03</span>订单分析平台</a>
+      <a href="#p4" data-sec="p4"><span class="no">04</span>抽抽乐记录器</a>
+      <a href="#p5" data-sec="p5"><span class="no">05</span>生活工作台</a>
+      <a href="#p6" data-sec="p6"><span class="no">06</span>塔罗</a>
+      <a href="#end" data-sec="end"><span class="no">07</span>联系</a>
+    </nav>
+  </div>
+  <div class="foot">2026 届 · 福州 · 随时到岗<br>3338329122@qq.com</div>
+</aside>
+
+<button class="collapse-btn" id="collapseBtn" title="折叠/展开侧栏"><span class="arrow">‹</span></button>
+
+<div class="topbar">
+  <span>马怡煖 · 作品集</span>
+  <span class="menu-btn" id="menuBtn">菜单 ☰</span>
+</div>
+<nav class="mnav" id="mnav">
+  <a href="#cover">首页</a><a href="#p1">医疗问答系统</a><a href="#p2">Vector RAG</a>
+  <a href="#p3">订单分析平台</a><a href="#p4">抽抽乐记录器</a><a href="#p5">生活工作台</a><a href="#p6">塔罗</a><a href="#end">联系</a>
+</nav>
+
+<main>
+  <!-- 00 首页 -->
+  <section class="panel cover" id="cover">
+    <div class="wrap cover-grid">
+      <div>
+        <div class="kicker">PORTFOLIO · 2026</div>
+        <h1>马怡煖 · 全栈开发作品集</h1>
+        <div class="role">全栈工程师 · 前端开发 · 小程序开发 · 数据处理 · 2026 届</div>
+        <p class="lede">
+          独立完成医疗问答系统（优秀毕设 90 分），毕业后上线 4 个真实项目，
+          服务 1000+ 用户、处理 6.2 万+ 单订单数据。
+        </p>
+        <div class="tags">
+          <span>全栈上线</span><span>Vue / Java</span><span>Python</span><span>数据处理</span><span>有真实用户</span>
+        </div>
+        <div class="cta">
+          <a class="btn btn-solid" href="#p1">查看项目 ↓</a>
+          <a class="btn btn-line" href="https://github.com/mayixuan1234" target="_blank" rel="noopener">GitHub</a>
+          <button class="btn btn-line" onclick="copyText('13665029873','电话')">📱 电话</button>
+          <button class="btn btn-yellow" onclick="openModal('wxModal')">💬 微信</button>
+        </div>
+      </div>
+      <aside class="quick">
+        <h4>速览 AT A GLANCE</h4>
+        <div class="row"><span>学历</span><b>2026 届 · 软件工程（专升本）</b></div>
+        <div class="row"><span>坐标</span><b>福州 · 随时到岗</b></div>
+        <div class="row"><span>主推项目</span><b>医疗问答系统（优秀毕设 90 分）</b></div>
+        <div class="row"><span>上线项目</span><b>4 个 · 1,000+ 用户</b></div>
+        <div class="row"><span>数据规模</span><b>6.2 万+ 单 · 18 万问答对</b></div>
+        <div class="row"><span>方向</span><b>全栈开发 · 独立上线</b></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 01 毕设 -->
+  <section class="panel" id="p1">
+    <div class="wrap">
+      <div class="kicker">01 · 毕业设计</div>
+      <div class="ptitle">基于知识图谱与通义千问 API 的医疗问答系统</div>
+      <div class="pmeta">
+        <span class="badge" onclick="openModal('awardModal')">⭐ 获评优秀毕设 · 点我看证书</span>
+        <span class="time mono">2025.10 – 2026.05</span>
+      </div>
+      <div class="cols">
+        <div class="shot-col">
+          <img class="shot-img" src="images/p1-bishi.png" alt="医疗问答系统 · 毕设截图">
+          <div style="margin-top:12px"><a class="btn btn-solid" href="https://www.feicut.com/fv/FV1bodmkz2xv?cm=1&fc=12&p=0" target="_blank" rel="noopener">🎬 查看演示视频（飞咔）</a></div>
+        </div>
+        <div class="body">
+          <p>针对通用大模型在医疗场景的"幻觉"问题，独立设计并实现图谱增强型 RAG 问答系统。用 Python 从 Huatuo-26M 数据集抽取实体关系，构建 <b>50 万+ 实体、125 万+ 关系边</b>的医疗知识图谱，以 MySQL 轻量化存储替代 Neo4j；按"图谱检索 → 结构化 Prompt → 通义千问生成"链路抑制幻觉。支持文本+图片多模态问答、ECharts 图谱可视化（BFS 最短路径）。Spring Boot + Vue3 全栈实现，70 个测试用例全过。</p>
+          <div class="note">⚠️ 浏览器渲染限制：ECharts 在 DOM 中渲染约 1000 节点即出现卡顿，实际入库可视化仅展示 713 节点 / 1857 边的可达子图；全量图谱存于 MySQL，后续计划迁移 WebGL 渲染以支持更大规模。</div>
+          <div class="nums">
+            <div class="n"><div class="v">50 万+</div><div class="l">图谱实体</div></div>
+            <div class="n"><div class="v">125 万+</div><div class="l">关系边</div></div>
+            <div class="n"><div class="v">70</div><div class="l">测试用例全过</div></div>
+            <div class="n"><div class="v">602.3</div><div class="l">req/s @100 并发</div></div>
+          </div>
+          <div class="stack"><span>Python</span><span>Spring Boot</span><span>Vue3</span><span>MySQL</span><span>通义千问 API</span><span>ECharts</span></div>
+          <details>
+            <summary>展开技术细节</summary>
+            <div class="body-in">
+              <ul>
+                <li><b>数据构建：</b>从 Huatuo-26M 问答语料用规则 + LLM 抽取症状 / 疾病 / 药品 / 检查实体及关系，清洗去重后入 MySQL。</li>
+                <li><b>检索与生成：</b>以问题为起点做 BFS 子图召回（限定层数与节点数），拼入结构化 Prompt，调用通义千问生成，抑制通用大模型幻觉。</li>
+                <li><b>多模态：</b>支持文本 + 图片混合输入，图片经 OCR 识别后并入问答上下文。</li>
+                <li><b>性能与测试：</b>JMeter 100 并发压测 602.3 req/s、错误率 0%；JUnit 70 个测试用例全部通过。</li>
+                <li><b>工程取舍：</b>不引入 Neo4j，用 MySQL 邻接表存图谱，降低部署成本；前端仅渲染 713 节点子图以规避 DOM 渲染上限。</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Vector RAG -->
+  <section class="panel" id="p2">
+    <div class="wrap">
+      <div class="kicker">02 · 实践学期作品</div>
+      <div class="ptitle">基于 Vector RAG 的智能医疗问答助手</div>
+      <div class="pmeta"><span class="badge" onclick="openModal('sovoModal')">作品展二等奖 · 点我看证书</span><span class="time mono">2025.07 – 2025.10</span></div>
+      <div class="cols">
+        <div class="shot-col">
+          <img class="shot-img" src="images/p2-rag.png" alt="Vector RAG 医疗问答助手 · 用药管理模块">
+          <div style="margin-top:12px"><a class="btn btn-solid" href="https://www.feicut.com/fv/FV1bodmkz2xv?cm=1&fc=12&p=0" target="_blank" rel="noopener">🎬 查看演示视频（飞咔）</a></div>
+        </div>
+        <div class="body">
+          <p>实践学期独立作品。从 Huatuo26M 数据集清洗出约 18 万条医患问答对、切块为 183 万文本片段，用 <b>text2vec-base-chinese</b> 编码为 384 维向量、建 FAISS 索引（GPU 加速）实现毫秒级检索，融合通义千问 API 流式输出。基于 Gradio 做「医疗咨询 / 用药管理 / 健康档案 / 对话历史」四模块，提示词约束模型按症状分析、用药指导等 7 个结构化模块输出，规避幻觉。</p>
+          <div class="nums">
+            <div class="n"><div class="v">18 万</div><div class="l">问答对 / 183 万片段</div></div>
+            <div class="n"><div class="v">384 维</div><div class="l">text2vec 向量</div></div>
+            <div class="n"><div class="v">90%</div><div class="l">问答准确率</div></div>
+            <div class="n"><div class="v">95%</div><div class="l">病史记忆率</div></div>
+          </div>
+          <div class="stack"><span>Python</span><span>text2vec-base-chinese</span><span>FAISS</span><span>通义千问 API</span><span>Gradio</span></div>
+          <details>
+            <summary>展开技术细节</summary>
+            <div class="body-in">
+              <ul>
+                <li><b>数据：</b>Huatuo26M（约 18 万医患问答对）清洗为 JSONL，切块生成约 183 万规范片段。</li>
+                <li><b>向量化：</b>text2vec-base-chinese → 384 维向量，FAISS 建索引并启用 GPU 加速。</li>
+                <li><b>生成：</b>Top-K 检索 + 历史对话拼入结构化 Prompt → 通义千问 API 流式逐字输出。</li>
+                <li><b>功能闭环：</b>用药方案正则提取（90% 准确率）、健康档案、按日期回溯对话，JSON 本地持久化。</li>
+                <li><b>工程取舍：</b>本地显存不足以微调大模型，改用「向量检索 + API」零训练成本方案。</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 订单平台 -->
+  <section class="panel" id="p3">
+    <div class="wrap">
+      <div class="kicker">03 · 个人项目 · 真实落地</div>
+      <div class="ptitle">6.2 万+ 单 · 订单数据分析平台</div>
+      <div class="pmeta"><span class="badge">多管理员轮班 · Cloudflare Pages</span><span class="time mono">2026.07 – 至今</span></div>
+      <div class="cols">
+        <img class="shot-img" src="images/p3-order.png" alt="订单数据分析平台截图">
+        <div class="body">
+          <p>为粉丝社群活动运营方开发的浏览器端数据审核平台：管理员上传微店 / 来豹接龙导出的 Excel，浏览器本地解析，自动完成主订单统计、碎卡兑换审核与集赞礼兑核对；多管理员分班协作，通过 Cloudflare Workers KV 云端同步两套审核小表，全程修改留痕、可追溯。</p>
+          <div class="note">✅ 已被社群实际采纳：主订单 6.8 万行本地解析不卡 UI，叠加碎卡兑换、集赞礼兑等多 Sheet（约 1 万行），自动生成查询表替代人工对账。</div>
+          <div class="nums">
+            <div class="n"><div class="v">6.8 万</div><div class="l">行主订单本地解析</div></div>
+            <div class="n"><div class="v">3,400+</div><div class="l">分析用户</div></div>
+            <div class="n"><div class="v">4 班</div><div class="l">多管理员轮班</div></div>
+            <div class="n"><div class="v">KV</div><div class="l">云端小表同步</div></div>
+          </div>
+          <div class="stack"><span>原生 JavaScript</span><span>SheetJS</span><span>ECharts</span><span>Cloudflare Workers KV</span></div>
+          <div style="margin-top:13px;display:flex;gap:10px;flex-wrap:wrap">
+            <a class="link" href="https://zhoukeyu-gacha-order-data-analysis.pages.dev/" target="_blank" rel="noopener">在线访问 →</a>
+            <a class="link" href="https://weibo.com/1851141241/RhNJMn6SK" target="_blank" rel="noopener">查看微博反馈 📣</a>
+          </div>
+          <details>
+            <summary>展开技术细节</summary>
+            <div class="body-in">
+              <ul>
+                <li><b>主订单分析：</b>SheetJS 兼容 UTF-8/GBK 解析 6.8 万行 Excel，本地计算卡型分布、销量 TOP、用户统计、活动期与满赠达标，不卡 UI；ECharts 出图。</li>
+                <li><b>碎卡兑换审核：</b>按"提交"聚合兑换请求，支持通过 / 未找到用户 / 人工放行，每条客服修改写入历史表。</li>
+                <li><b>集赞礼兑核对：</b>三 Sheet（通过 / 重复问卷 / 不通过）导入核对，人工指定微信昵称归属，自动重算并留痕。</li>
+                <li><b>多班协作：</b>大表本地不上云，云端只存两套审核小表（KV 整份快照）；登录自动探测合并，保存前先拉云端再写回，降低并发覆盖。</li>
+                <li><b>留痕：</b>页面内修改历史表 + 导出 Excel 均含昵称列与 ✎已改 标记，交接时可追溯。</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 抽抽乐记录器 -->
+  <section class="panel" id="p4">
+    <div class="wrap">
+      <div class="kicker">04 · 三端产品</div>
+      <div class="ptitle">抽抽乐（盲盒抽卡）记录器</div>
+      <div class="pmeta"><span class="badge">v6.1 · 已上线</span><span class="time mono">2026.03 – 至今</span></div>
+      <div class="cols">
+        <div class="shot-row3">
+          <img class="shot-img-v" src="images/p4-1-home.jpg" alt="抽抽乐记录器 · 首页">
+          <img class="shot-img-v" src="images/p4-2-record.jpg" alt="抽抽乐记录器 · 记录页">
+          <img class="shot-img-v" src="images/p4-3-data.jpg" alt="抽抽乐记录器 · 数据中心">
+        </div>
+        <div class="body">
+          <p>面向粉丝社群的盲盒抽卡记录工具，已迭代至 v6.1，累计 1,000+ 用户。支持手动点选、OCR 识别、文本批量导入三种录入方式，内置 88 张卡牌图鉴、个人 9 档与全服 7 档满赠追踪。一套产品同时发布网页版、微信小程序版和 Android APK 版——APK 用命令行工具链自打包，不依赖 Android Studio，包体仅 132KB。</p>
+          <div class="note">💾 数据通过 JSON 一键导入 / 导出备份，换设备不丢记录。</div>
+          <div class="stack"><span>Web</span><span>微信小程序</span><span>Android APK</span><span>OCR 识别</span><span>JSON 导入导出</span></div>
+          <div style="margin-top:13px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <a class="btn btn-yellow" href="ZhouKeYuGachaRecorder.apk" download title="效果与网页版一致，点击下载安装（约 1.3MB）">📦 下载 APK 安装包</a>
+            <button class="btn btn-line" onclick="openModal('mpModal')">📱 小程序码</button>
+            <button class="btn btn-line" onclick="openModal('wxModal')">💬 微信咨询</button>
+            <a class="link" href="https://zhoukeyu-gacha.pages.dev/" target="_blank" rel="noopener">在线访问 →</a>
+          </div>
+          <details>
+            <summary>展开技术细节</summary>
+            <div class="body-in">
+              <ul>
+                <li><b>三端一致：</b>同一套业务逻辑发布 Web、微信小程序、Android APK；APK 用命令行工具链自打包，不依赖 Android Studio，包体仅 132KB。</li>
+                <li><b>三种录入：</b>手动点选、OCR 识别小票、文本批量导入，适配粉丝不同使用习惯。</li>
+                <li><b>数据备份：</b>全部记录通过 JSON 一键导入 / 导出，换设备不丢数据。</li>
+                <li><b>功能：</b>内置 88 张卡牌图鉴、个人 9 档与全服 7 档满赠追踪，累计 1,000+ 用户。</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 生活工作台 -->
+  <section class="panel" id="p5">
+    <div class="wrap">
+      <div class="kicker">05 · 个人项目 · PWA 双端上线</div>
+      <div class="ptitle">Orbit Life · 生活工作台</div>
+      <div class="pmeta"><span class="badge">Web + Android 双端 · 已上线</span><span class="time mono">2026.08 – 至今</span></div>
+      <div class="cols">
+        <img class="shot-img" src="images/p5-workspace.png" alt="生活工作台 · Orbit Life 首页">
+        <div class="body">
+          <p>为个人使用打造的纯前端生活仪表盘：番茄钟专注 + 12 个记录模块（灵感 / 体感 / 宠物 / 菜谱 / 衣橱 / 观影 / 好物 / 人情 / 社交 / 旅行 / 通勤），全部数据 <b>localStorage 本地存储 + JSON 一键备份</b>。零第三方依赖的单文件 PWA，同时用命令行工具链打包成原生 Android APK——<b>零权限、纯离线</b>，WebView 虚拟域名规避 <code>file://</code> 下 localStorage 被系统清理的问题，包体仅 70KB。</p>
+          <div class="nums">
+            <div class="n"><div class="v">12</div><div class="l">记录模块</div></div>
+            <div class="n"><div class="v">70KB</div><div class="l">APK 包体</div></div>
+            <div class="n"><div class="v">0</div><div class="l">权限申请</div></div>
+            <div class="n"><div class="v">双端</div><div class="l">Web PWA + APK</div></div>
+          </div>
+          <div class="stack"><span>原生 HTML/CSS/JS</span><span>PWA</span><span>SVG 手写</span><span>WebView 打包</span><span>Cloudflare Pages</span></div>
+          <div style="margin-top:13px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <a class="link" href="https://focusworkspace.pages.dev/" target="_blank" rel="noopener">在线访问 →</a>
+            <a class="link" href="https://github.com/mayixuan1234/focusworkspace" target="_blank" rel="noopener">GitHub 仓库</a>
+          </div>
+          <details>
+            <summary>展开技术细节</summary>
+            <div class="body-in">
+              <ul>
+                <li><b>双端一致：</b>同一套网页产物发布 Web PWA 与 Android APK；PWA 支持"添加到主屏幕"、离线可用。</li>
+                <li><b>APK 构建：</b>aapt2 → javac → d8 → zipalign → apksigner 命令行工具链，不依赖 Android Studio，构建 &lt; 5 秒。</li>
+                <li><b>存储可靠性：</b>WebView 用 shouldInterceptRequest 把资源映射到虚拟域名，规避 file:// 下 localStorage 被 ROM 当临时存储清理。</li>
+                <li><b>主题：</b>CSS 变量驱动的宇宙星河昼夜主题，响应式适配。</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 塔罗学习笔记 -->
+  <section class="panel" id="p6">
+    <div class="wrap">
+      <div class="kicker">06 · 个人项目 · AI 工具实践</div>
+      <div class="ptitle">塔罗学习笔记 · 多模型 AI 解读工具</div>
+      <div class="pmeta"><span class="badge">个人项目 · 已上线（Cloudflare Pages）</span></div>
+      <div class="body">
+        <p>一个把「抽牌工具」和「多模型 AI 解读」合在一起的塔罗学习站点，重点在提示词设计与多模型适配。</p>
+        <div style="margin-top:16px;font-size:15px;font-weight:800;color:var(--blue-deep)">功能要点</div>
+        <ul style="margin:8px 0 0;padding-left:18px;font-size:15.5px;line-height:1.8">
+          <li>78 张牌完整牌库，按大阿卡纳与四元素分类，支持正逆位</li>
+          <li>抽牌自测与三牌阵（现状 / 阻碍 / 建议），含历史记录</li>
+          <li>接入智谱、DeepSeek、通义千问、OpenAI、Moonshot、Claude 六家模型，同时支持 OpenAI 兼容协议与 Anthropic 自定义接口</li>
+          <li>同一问题可切换模型对比输出，用于观察不同模型下提示词的稳定性差异</li>
+        </ul>
+        <div style="margin-top:18px;font-size:15px;font-weight:800;color:var(--blue-deep)">界面截图</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:10px;align-items:start">
+          <figure style="margin:0">
+            <img class="shot-img-v" src="images/tarot/tarot-01-shuffle.png" alt="塔罗学习笔记 · 三牌阵抽牌界面" loading="lazy">
+            <figcaption style="margin-top:7px;font-size:12px;color:var(--ink2);line-height:1.55">三牌阵抽牌界面：扇形牌堆，洗完牌后依次抽出「现状 / 阻碍 / 建议」</figcaption>
+          </figure>
+          <figure style="margin:0">
+            <img class="shot-img-v" src="images/tarot/tarot-02-draw.png" alt="塔罗学习笔记 · 抽牌结果" loading="lazy">
+            <figcaption style="margin-top:7px;font-size:12px;color:var(--ink2);line-height:1.55">抽牌结果：三张牌带正逆位与关键词，下方进入解读</figcaption>
+          </figure>
+          <figure style="margin:0">
+            <img class="shot-img-v" src="images/tarot/tarot-03-reading.png" alt="塔罗学习笔记 · 解读结果页" loading="lazy">
+            <figcaption style="margin-top:7px;font-size:12px;color:var(--ink2);line-height:1.55">解读结果页：牌义解读 + AI 深度解读入口</figcaption>
+          </figure>
+          <figure style="margin:0">
+            <img class="shot-img-v" src="images/tarot/tarot-04-home.png" alt="塔罗学习笔记 · 主页" loading="lazy">
+            <figcaption style="margin-top:7px;font-size:12px;color:var(--ink2);line-height:1.55">主页：78 张牌图鉴、牌库分类、开始占卜</figcaption>
+          </figure>
+        </div>
+        <div style="margin-top:16px;font-size:15px;font-weight:800;color:var(--blue-deep)">工程取舍</div>
+        <ul style="margin:8px 0 0;padding-left:18px;font-size:15.5px;line-height:1.8">
+          <li><b>API Key 只保存在用户浏览器本地（localStorage），不上传服务端</b>，换取零密钥泄露风险；代价是无账号体系、无法多端同步</li>
+          <li>图片素材标注 MIT 授权来源，页面上明示来源</li>
+          <li><b>已知不足：</b>缺少对 AI 解读效果的自动化验证，目前依赖人工反复试同一组牌面比对输出稳定性</li>
+        </ul>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <a class="link" href="https://tarot-learner.pages.dev/" target="_blank" rel="noopener">在线访问 →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 联系 -->
+  <section class="panel end" id="end">
+    <div class="wrap">
+      <div class="kicker">07 · CONTACT</div>
+      <h2>欢迎聊聊 · 随时到岗</h2>
+      <p>2026 届软件工程应届生，全栈开发方向，期望地点福州。<br>
+         独立完成医疗问答系统（优秀毕设 90 分），已上线 4 个真实项目。</p>
+      <div class="contacts">
+        <div class="crow"><span class="val">✉️ 3338329122@qq.com</span><button class="copybtn" onclick="copyText('3338329122@qq.com','邮箱')">📋 点击复制</button></div>
+        <div class="crow"><span class="val">📱 13665029873</span><button class="copybtn" onclick="copyText('13665029873','电话')">📋 点击复制</button></div>
+        <div class="crow"><span class="val">💬 微信（扫码添加）</span><button class="copybtn" onclick="openModal('wxModal')">打开二维码</button></div>
+        <div class="crow"><span class="val">🐙 GitHub</span><a class="copybtn" href="https://github.com/mayixuan1234" target="_blank" rel="noopener">前往主页</a></div>
+        <div class="crow"><span class="val">🎬 飞咔演示视频</span><a class="copybtn" href="https://www.feicut.com/fv/FV1bodmkz2xv?cm=1&amp;fc=12&amp;p=0" target="_blank" rel="noopener">打开</a></div>
+        <div class="crow"><span class="val">🎬 作品集二维码</span><button class="copybtn" onclick="openModal('fkModal')">打开二维码</button></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>© 2026 马怡煖 · 全栈工程师</footer>
+</main>
+
+<!-- Toast & 弹窗 -->
+<div id="toast"></div>
+<div id="progress"></div>
+
+<div class="modal" id="awardModal" onclick="closeModal(event,'awardModal')">
+  <div class="box" onclick="event.stopPropagation()">
+    <h4>优秀毕业设计（论文）证书</h4>
+    <img src="images/cert-biye.jpg" alt="优秀毕业设计证书">
+    <button class="btn btn-line close" onclick="closeModalDirect('awardModal')">关闭</button>
+  </div>
+</div>
+
+<div class="modal" id="sovoModal" onclick="closeModal(event,'sovoModal')">
+  <div class="box" onclick="event.stopPropagation()">
+    <h4>实践学期优秀作品展 · 软件类二等奖</h4>
+    <img src="images/cert-shijian.jpg" alt="实践学期二等奖证书">
+    <button class="btn btn-line close" onclick="closeModalDirect('sovoModal')">关闭</button>
+  </div>
+</div>
+
+<div class="modal" id="wxModal" onclick="closeModal(event,'wxModal')">
+  <div class="box" onclick="event.stopPropagation()">
+    <h4>微信扫码添加</h4>
+    <img src="images/wechat_qr.png" alt="个人微信二维码">
+    <button class="btn btn-line close" onclick="closeModalDirect('wxModal')">关闭</button>
+  </div>
+</div>
+
+<div class="modal" id="mpModal" onclick="closeModal(event,'mpModal')">
+  <div class="box" onclick="event.stopPropagation()">
+    <h4>抽抽乐小程序码</h4>
+    <img src="images/qr-chouchoule.jpg" alt="抽抽乐小程序二维码">
+    <button class="btn btn-line close" onclick="closeModalDirect('mpModal')">关闭</button>
+  </div>
+</div>
+
+<div class="modal" id="fkModal" onclick="closeModal(event,'fkModal')">
+  <div class="box" onclick="event.stopPropagation()">
+    <h4>飞咔作品集演示视频 · 扫码观看</h4>
+    <img src="images/feicut_qr.jpg" alt="飞咔作品集二维码">
+    <button class="btn btn-line close" onclick="closeModalDirect('fkModal')">关闭</button>
+  </div>
+</div>
+
+<script>
+  // 导航高亮
+  const links=document.querySelectorAll('.nav a');
+  const panels=['cover','p1','p2','p3','p4','p5','p6','end'].map(id=>document.getElementById(id));
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('active',a.dataset.sec===e.target.id));})},{threshold:.5});
+  panels.forEach(p=>io.observe(p));
+
+  // 侧栏折叠
+  document.getElementById('collapseBtn').onclick=()=>document.body.classList.toggle('collapsed');
+  // 手机菜单
+  const mnav=document.getElementById('mnav');
+  document.getElementById('menuBtn').onclick=()=>mnav.classList.toggle('open');
+  mnav.querySelectorAll('a').forEach(a=>a.onclick=()=>mnav.classList.remove('open'));
+
+  // Toast
+  let toastTimer;
+  function showToast(msg){
+    const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+    clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+  }
+  // 复制
+  function copyText(text,label){
+    const done=()=>showToast(label+'已复制到剪贴板');
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done).catch(()=>fallback(text,done));}
+    else fallback(text,done);
+  }
+  function fallback(text,cb){
+    const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity=0;
+    document.body.appendChild(ta);ta.select();try{document.execCommand('copy');cb();}catch(e){showToast('复制失败，请手动复制：'+text);}
+    document.body.removeChild(ta);
+  }
+  // 底部阅读进度条
+  const bar=document.getElementById('progress');
+  addEventListener('scroll',()=>{
+    const h=document.documentElement;
+    const p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+    bar.style.width=p+'%';
+  },{passive:true});
+  // 弹窗
+  function openModal(id){document.getElementById(id).classList.add('open')}
+  function closeModal(e,id){if(e.target.id===id)closeModalDirect(id)}
+  function closeModalDirect(id){document.getElementById(id).classList.remove('open')}
+</script>
+
+<!-- ===== 图片放大查看器（原生实现，独立命名空间 pfz-，无外部依赖） ===== -->
+<style>
+  /* 图片放大查看器 —— 独立命名空间，不覆盖现有样式 */
+  #pfzOverlay{position:fixed;inset:0;z-index:900;display:none;background:rgba(0,0,0,.9)}
+  #pfzOverlay.open{display:block}
+  #pfzStage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;touch-action:none;cursor:zoom-out}
+  #pfzImg{max-width:92vw;max-height:86vh;object-fit:contain;border-radius:6px;
+    transform-origin:center center;will-change:transform;cursor:grab;
+    user-select:none;-webkit-user-select:none;-webkit-user-drag:none;
+    box-shadow:0 18px 60px rgba(0,0,0,.55);background:#111}
+  #pfzImg.pfz-grabbing{cursor:grabbing}
+  .pfz-btn{position:absolute;z-index:2;border:1px solid rgba(255,255,255,.35);
+    background:rgba(255,255,255,.14);color:#fff;font-size:13px;line-height:1;
+    padding:10px 15px;border-radius:999px;cursor:pointer;font-family:inherit;
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    transition:background .2s,border-color .2s,transform .1s}
+  .pfz-btn:hover{background:var(--blue,#1F5CAC);border-color:var(--blue,#1F5CAC)}
+  .pfz-btn:active{transform:scale(.96)}
+  .pfz-btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  #pfzClose{top:18px;right:18px}
+  #pfzOpenTab{bottom:18px;right:18px}
+  #pfzZoomTag{position:absolute;top:18px;left:18px;z-index:2;color:#fff;font-size:12.5px;
+    font-variant-numeric:tabular-nums;padding:9px 13px;border-radius:999px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);pointer-events:none}
+  #pfzHint{position:absolute;bottom:22px;left:0;right:0;text-align:center;z-index:2;
+    color:rgba(255,255,255,.7);font-size:12.5px;letter-spacing:.02em;pointer-events:none}
+  body.pfz-lock{overflow:hidden}
+  .shot-img,.shot-img-v{cursor:zoom-in}
+  @media (max-width:640px){#pfzHint{display:none}}
+</style>
+
+<div id="pfzOverlay" role="dialog" aria-modal="true" aria-label="图片放大查看">
+  <div id="pfzStage">
+    <img id="pfzImg" alt="" draggable="false">
+  </div>
+  <div id="pfzZoomTag" aria-live="polite">100%</div>
+  <button type="button" class="pfz-btn" id="pfzClose" aria-label="关闭放大查看">✕ 关闭</button>
+  <button type="button" class="pfz-btn" id="pfzOpenTab" aria-label="在新窗口打开原图">⤢ 在新窗口打开</button>
+  <div id="pfzHint">滚轮缩放 · 按住拖拽平移 · 双击 1x/2x · ESC 关闭</div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var MIN=0.5, MAX=4, STEP=1.15, SMALL=120;
+  var overlay=document.getElementById('pfzOverlay'),
+      stage=document.getElementById('pfzStage'),
+      img=document.getElementById('pfzImg'),
+      tag=document.getElementById('pfzZoomTag'),
+      btnClose=document.getElementById('pfzClose'),
+      btnOpen=document.getElementById('pfzOpenTab');
+  if(!overlay||!stage||!img) return;
+
+  var scale=1, tx=0, ty=0, curSrc='', prevOverflow=null,
+      dragging=false, startX=0, startY=0, baseX=0, baseY=0,
+      pinchDist=0, touchMode=0, lastTap=0;
+
+  function isOpen(){ return overlay.classList.contains('open'); }
+
+  function apply(){
+    img.style.transform='translate('+tx+'px,'+ty+'px) scale('+scale+')';
+    tag.textContent=Math.round(scale*100)+'%';
+    img.classList.toggle('pfz-grabbing', dragging);
+  }
+
+  function limits(){
+    var sw=stage.clientWidth, sh=stage.clientHeight;
+    var bw=img.clientWidth||img.naturalWidth||0, bh=img.clientHeight||img.naturalHeight||0;
+    return { x:Math.max(0,(bw*scale-sw)/2), y:Math.max(0,(bh*scale-sh)/2) };
+  }
+
+  function normalize(){
+    if(scale<=1){ scale=Math.min(scale,1); tx=0; ty=0; }
+    var m=limits();
+    if(tx<-m.x) tx=-m.x; if(tx>m.x) tx=m.x;
+    if(ty<-m.y) ty=-m.y; if(ty>m.y) ty=m.y;
+  }
+
+  function zoomTo(next, cx, cy){
+    next=Math.max(MIN, Math.min(MAX, next));
+    if(Math.abs(next-scale)<1e-4) return;
+    var r=stage.getBoundingClientRect();
+    var mx=(typeof cx==='number')?cx:(r.left+r.width/2);
+    var my=(typeof cy==='number')?cy:(r.top+r.height/2);
+    var dx=mx-(r.left+r.width/2+tx), dy=my-(r.top+r.height/2+ty);
+    var k=next/scale;
+    tx=tx+dx*(1-k);
+    ty=ty+dy*(1-k);
+    scale=next;
+    normalize(); apply();
+  }
+
+  function open(src, alt){
+    curSrc=src;
+    img.style.transform='translate(0px,0px) scale(1)';
+    img.src=src; img.alt=alt||'';
+    scale=1; tx=0; ty=0; dragging=false; pinchDist=0; touchMode=0;
+    prevOverflow=document.body.style.overflow;
+    document.body.classList.add('pfz-lock');
+    document.body.style.overflow='hidden';
+    overlay.classList.add('open');
+    btnOpen.setAttribute('aria-label','在新窗口打开原图'+(alt?('：'+alt):''));
+    img.setAttribute('aria-label','放大查看中的图片'+(alt?('：'+alt):''));
+    requestAnimationFrame(function(){ normalize(); apply(); });
+    try{ btnClose.focus({preventScroll:true}); }catch(e){ btnClose.focus(); }
+  }
+
+  function close(){
+    overlay.classList.remove('open');
+    document.body.classList.remove('pfz-lock');
+    document.body.style.overflow=(prevOverflow===null?'':prevOverflow);
+    prevOverflow=null;
+    scale=1; tx=0; ty=0; dragging=false; pinchDist=0; touchMode=0; lastTap=0;
+    img.style.transform='translate(0px,0px) scale(1)';
+    tag.textContent='100%';
+    img.classList.remove('pfz-grabbing');
+  }
+
+  /* ---- 事件委托：页面上所有非小图标 img 均可点击放大 ---- */
+  document.addEventListener('click', function(e){
+    var t=e.target;
+    if(!t||t.tagName!=='IMG') return;
+    if(t.id==='pfzImg') return;
+    if(t.closest('#pfzOverlay')) return;
+    if(t.classList.contains('no-zoom')||t.closest('.no-zoom')) return;
+    var s=t.getAttribute('src')||'';
+    if(!s||/^data:/i.test(s)&&s.length<400) return;
+    if(/\.svg(\?|#|$)/i.test(s)) return;
+    if(t.naturalWidth>0&&t.naturalHeight>0&&t.naturalWidth<SMALL&&t.naturalHeight<SMALL) return;
+    if(isOpen()) return;
+    var a=t.closest('a');
+    if(a) e.preventDefault();
+    open(s, t.getAttribute('alt')||'');
+  }, false);
+
+  /* 点击遮罩空白关闭 */
+  stage.addEventListener('click', function(e){ if(e.target===stage) close(); });
+  btnClose.addEventListener('click', function(e){ e.stopPropagation(); close(); });
+  btnOpen.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(curSrc) window.open(curSrc,'_blank','noopener');
+  });
+
+  /* 滚轮缩放（以鼠标位置为锚点） */
+  stage.addEventListener('wheel', function(e){
+    if(!isOpen()) return;
+    e.preventDefault();
+    var f=e.deltaY<0?STEP:1/STEP;
+    zoomTo(scale*f, e.clientX, e.clientY);
+  }, {passive:false});
+
+  /* 双击在 1x / 2x 之间切换 */
+  img.addEventListener('dblclick', function(e){
+    if(!isOpen()) return;
+    e.preventDefault(); e.stopPropagation();
+    if(scale>1.01) zoomTo(1);
+    else zoomTo(2, e.clientX, e.clientY);
+  });
+
+  /* 鼠标拖拽平移 */
+  img.addEventListener('mousedown', function(e){
+    if(!isOpen()||e.button!==0||scale<=1) return;
+    e.preventDefault();
+    dragging=true; startX=e.clientX; startY=e.clientY; baseX=tx; baseY=ty; apply();
+  });
+  window.addEventListener('mousemove', function(e){
+    if(!dragging) return;
+    e.preventDefault();
+    tx=baseX+(e.clientX-startX);
+    ty=baseY+(e.clientY-startY);
+    normalize(); apply();
+  });
+  window.addEventListener('mouseup', function(){
+    if(dragging){ dragging=false; apply(); }
+  });
+
+  /* ESC 关闭 */
+  window.addEventListener('keydown', function(e){
+    if(!isOpen()) return;
+    if(e.key==='Escape'||e.key==='Esc'){ e.preventDefault(); close(); }
+  });
+
+  /* 触屏：单指平移 / 双指捏合缩放 / 双击切换 */
+  function dist(a,b){
+    var dx=a.clientX-b.clientX, dy=a.clientY-b.clientY;
+    return Math.sqrt(dx*dx+dy*dy);
+  }
+  stage.addEventListener('touchstart', function(e){
+    if(!isOpen()) return;
+    if(e.touches.length>=2){
+      pinchDist=dist(e.touches[0],e.touches[1]); touchMode=2;
+    }else if(e.touches.length===1){
+      touchMode=1;
+      startX=e.touches[0].clientX; startY=e.touches[0].clientY; baseX=tx; baseY=ty;
+      var now=Date.now();
+      if(now-lastTap<300){
+        lastTap=0;
+        if(scale>1.01) zoomTo(1); else zoomTo(2, e.touches[0].clientX, e.touches[0].clientY);
+      }else{ lastTap=now; }
+    }
+  }, {passive:true});
+
+  stage.addEventListener('touchmove', function(e){
+    if(!isOpen()) return;
+    if(touchMode===2&&e.touches.length>=2){
+      e.preventDefault();
+      var d=dist(e.touches[0],e.touches[1]);
+      if(pinchDist>0&&d>0){
+        var mx=(e.touches[0].clientX+e.touches[1].clientX)/2;
+        var my=(e.touches[0].clientY+e.touches[1].clientY)/2;
+        zoomTo(scale*(d/pinchDist), mx, my);
+      }
+      pinchDist=d;
+      return;
+    }
+    if(touchMode===1&&e.touches.length===1&&scale>1){
+      e.preventDefault();
+      tx=baseX+(e.touches[0].clientX-startX);
+      ty=baseY+(e.touches[0].clientY-startY);
+      normalize(); apply();
+    }
+  }, {passive:false});
+
+  stage.addEventListener('touchend', function(e){
+    if(e.touches.length===0){ touchMode=0; pinchDist=0; }
+    else if(e.touches.length===1){
+      touchMode=1; pinchDist=0;
+      startX=e.touches[0].clientX; startY=e.touches[0].clientY; baseX=tx; baseY=ty;
+    }
+  }, {passive:true});
+
+  img.addEventListener('load', function(){ if(isOpen()){ normalize(); apply(); } });
+})();
+</script>
+
+</body>
+</html>
